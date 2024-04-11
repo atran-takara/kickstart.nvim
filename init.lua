@@ -215,6 +215,8 @@ vim.keymap.set("n", "<leader>p", [["*P]])
 vim.keymap.set({"n", "v"}, "<leader>y", [["*y]])
 vim.keymap.set("n", "<leader>Y", [["*Y]])
 vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
+vim.keymap.set("n", "H", ":bp<CR>")
+vim.keymap.set("n", "L", ":bn<CR>")
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -793,7 +795,6 @@ require('lazy').setup({
       --  - ci'  - [C]hange [I]nside [']quote
       require('mini.ai').setup { n_lines = 500 }
       require('mini.pairs').setup()
-      require('mini.bufremove').setup()
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
