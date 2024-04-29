@@ -218,6 +218,12 @@ vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
 vim.keymap.set("n", "H", ":bp<CR>")
 vim.keymap.set("n", "L", ":bn<CR>")
 
+vim.keymap.set("n", "[c", function()
+  require("treesitter-context").go_to_context(vim.v.count1)
+end, { silent = true })
+
+vim.keymap.set("n", "<leader>cc", ":TSContextToggle<CR>", { silent = true })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -762,6 +768,7 @@ require('lazy').setup({
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'path' },
+          { name = 'nvim_lsp_signature_help' },
         },
       }
     end,
@@ -851,6 +858,8 @@ require('lazy').setup({
       --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
     end,
   },
+
+  { 'nvim-treesitter/nvim-treesitter-context' },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
