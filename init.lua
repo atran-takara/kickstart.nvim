@@ -177,6 +177,7 @@ vim.opt.writebackup = false
 vim.opt.swapfile = false
 vim.opt.incsearch = true
 vim.opt.scrolloff = 8
+vim.opt.conceallevel = 1
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
