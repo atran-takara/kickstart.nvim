@@ -177,7 +177,6 @@ vim.opt.writebackup = false
 vim.opt.swapfile = false
 vim.opt.incsearch = true
 vim.opt.scrolloff = 8
-vim.opt.conceallevel = 1
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
@@ -209,22 +208,31 @@ vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower win
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- Custom keymaps
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
-vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
-vim.keymap.set({"n", "v"}, "<leader>p", [["*p]])
-vim.keymap.set({"n", "v"}, "<leader>P", [["*P]])
-vim.keymap.set({"n", "v"}, "<leader>y", [["*y]])
-vim.keymap.set("n", "<leader>Y", [["*Y]])
-vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
-vim.keymap.set("n", "H", ":bp<CR>")
-vim.keymap.set("n", "L", ":bn<CR>")
+vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
+vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
+vim.keymap.set({ 'n', 'v' }, '<leader>d', [["_d]])
+vim.keymap.set({ 'n', 'v' }, '<leader>p', [["*p]])
+vim.keymap.set({ 'n', 'v' }, '<leader>P', [["*P]])
+vim.keymap.set({ 'n', 'v' }, '<leader>y', [["*y]])
+vim.keymap.set('n', '<leader>Y', [["*Y]])
+vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
+vim.keymap.set('n', 'H', ':bp<CR>')
+vim.keymap.set('n', 'L', ':bn<CR>')
 
-vim.keymap.set("n", "[c", function()
-  require("treesitter-context").go_to_context(vim.v.count1)
+-- restore the session for the current directory
+vim.api.nvim_set_keymap('n', '<leader>qs', [[<cmd>lua require("persistence").load()<cr>]], {})
+
+-- restore the last session
+vim.api.nvim_set_keymap('n', '<leader>ql', [[<cmd>lua require("persistence").load({ last = true })<cr>]], {})
+
+-- stop Persistence => session won't be saved on exit
+vim.api.nvim_set_keymap('n', '<leader>qd', [[<cmd>lua require("persistence").stop()<cr>]], {})
+
+vim.keymap.set('n', '[c', function()
+  require('treesitter-context').go_to_context(vim.v.count1)
 end, { silent = true })
 
-vim.keymap.set("n", "<leader>cc", ":TSContextToggle<CR>", { silent = true })
+vim.keymap.set('n', '<leader>cc', ':TSContextToggle<CR>', { silent = true })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -237,6 +245,24 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
     vim.highlight.on_yank()
+  end,
+})
+
+-- Close certain buffer types with 'q'.
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = {
+    'checkhealth',
+    'fugitive*',
+    'git',
+    'help',
+    'lspinfo',
+    'netrw',
+    'notify',
+    'qf',
+    'query',
+  },
+  callback = function()
+    vim.keymap.set('n', 'q', vim.cmd.close, { desc = 'Close the current buffer', buffer = true })
   end,
 })
 
@@ -370,7 +396,7 @@ require('lazy').setup({
           mappings = {
             i = { ['<C-e>'] = require('telescope.actions.layout').toggle_preview },
           },
-          path_display = { "smart" },
+          path_display = { 'smart' },
         },
         -- pickers = {}
         extensions = {
@@ -489,8 +515,8 @@ require('lazy').setup({
           map('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
 
           -- Find references for the word under your cursor.
-          map('gr', function() 
-            require('telescope.builtin').lsp_references({ show_line = false })
+          map('gr', function()
+            require('telescope.builtin').lsp_references { show_line = false }
           end, '[G]oto [R]eferences')
 
           -- Jump to the implementation of the word under your cursor.
@@ -614,10 +640,10 @@ require('lazy').setup({
 
         csharp_ls = {
           handlers = {
-            ["textDocument/definition"] = require('csharpls_extended').handler,
-            ["textDocument/typeDefinition"] = require('csharpls_extended').handler,
+            ['textDocument/definition'] = require('csharpls_extended').handler,
+            ['textDocument/typeDefinition'] = require('csharpls_extended').handler,
           },
-        }
+        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -650,7 +676,7 @@ require('lazy').setup({
       }
     end,
     opts = {
-        inlay_hints = { enabled = true },
+      inlay_hints = { enabled = true },
     },
   },
 
@@ -682,8 +708,8 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        python = { "black" },
-        cs = { "csharpier" },
+        python = { 'black' },
+        cs = { 'csharpier' },
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
@@ -838,7 +864,6 @@ require('lazy').setup({
       --  - yinq - [Y]ank [I]nside [N]ext [']quote
       --  - ci'  - [C]hange [I]nside [']quote
       require('mini.ai').setup { n_lines = 500 }
-      require('mini.pairs').setup()
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
@@ -891,7 +916,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
