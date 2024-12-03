@@ -11,11 +11,7 @@ return {
   },
   cmd = 'Neotree',
   keys = {
-<<<<<<< HEAD
-    { '\\', ':Neotree reveal<CR>', { desc = 'NeoTree reveal' } },
-=======
-    { '\\', ':Neotree reveal<CR>', desc = 'NeoTree reveal' },
->>>>>>> upstream/master
+    { '\\', ':Neotree reveal<CR>', desc = 'NeoTree reveal', silent = true },
   },
   opts = {
     filesystem = {
