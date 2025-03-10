@@ -512,7 +512,6 @@ require('lazy').setup({
   },
 
   -- LSP Plugins
-  { 'Decodetalkers/csharpls-extended-lsp.nvim' },
   {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
@@ -535,7 +534,6 @@ require('lazy').setup({
       { 'williamboman/mason.nvim', opts = {} },
       'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
-      'Decodetalkers/csharpls-extended-lsp.nvim',
 
       -- Useful status updates for LSP.
       { 'j-hui/fidget.nvim', opts = {} },
@@ -750,12 +748,6 @@ require('lazy').setup({
               -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
               -- diagnostics = { disable = { 'missing-fields' } },
             },
-          },
-        },
-        csharp_ls = {
-          handlers = {
-            ['textDocument/definition'] = require('csharpls_extended').handler,
-            ['textDocument/typeDefinition'] = require('csharpls_extended').handler,
           },
         },
       }
