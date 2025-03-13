@@ -6,6 +6,5 @@ return {
     ignore_target = function(target)
       return string.match(target, '.*Installer%.sln$') ~= nil
     end,
-    filewatching = 'roslyn',
   },
 }
