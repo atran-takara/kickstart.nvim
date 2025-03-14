@@ -179,6 +179,7 @@ vim.opt.writebackup = false
 vim.opt.swapfile = false
 vim.opt.incsearch = true
 vim.opt.scrolloff = 8
+vim.opt.messagesopt = { 'wait:500', 'history:10000' }
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
@@ -217,6 +218,7 @@ vim.keymap.set('n', '<leader>Y', [["*Y]])
 vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
 vim.keymap.set('n', 'H', ':bp<CR>')
 vim.keymap.set('n', 'L', ':bn<CR>')
+vim.keymap.set('n', '<leader>oi', "<cmd>lua require('oil').toggle_float('.')<CR>", { noremap = true, silent = true })
 
 -- restore the session for the current directory
 vim.api.nvim_set_keymap('n', '<leader>qs', [[<cmd>lua require("persistence").load()<cr>]], {})
@@ -512,7 +514,6 @@ require('lazy').setup({
   },
 
   -- LSP Plugins
-  { 'Decodetalkers/csharpls-extended-lsp.nvim' },
   {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
@@ -535,7 +536,6 @@ require('lazy').setup({
       { 'williamboman/mason.nvim', opts = {} },
       'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
-      'Decodetalkers/csharpls-extended-lsp.nvim',
 
       -- Useful status updates for LSP.
       { 'j-hui/fidget.nvim', opts = {} },
@@ -752,12 +752,6 @@ require('lazy').setup({
             },
           },
         },
-        csharp_ls = {
-          handlers = {
-            ['textDocument/definition'] = require('csharpls_extended').handler,
-            ['textDocument/typeDefinition'] = require('csharpls_extended').handler,
-          },
-        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -971,7 +965,6 @@ require('lazy').setup({
     lazy = false,
     priority = 1000, -- Make sure to load this before all the other start plugins.
     config = function()
-
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
