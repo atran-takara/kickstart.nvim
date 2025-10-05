@@ -184,6 +184,10 @@ vim.opt.writebackup = false
 vim.opt.swapfile = false
 vim.opt.incsearch = true
 vim.opt.scrolloff = 8
+vim.opt.shell = 'pwsh'
+vim.opt.shellcmdflag = '-noprofile -command'
+vim.opt.shellxquote = ''
+-- vim.g.copilot_settings = { selectedCompletionModel = 'gpt-4o-copilot' }
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
@@ -222,7 +226,7 @@ vim.keymap.set('n', '<leader>Y', [["*Y]])
 vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
 vim.keymap.set('n', 'H', ':bp<CR>')
 vim.keymap.set('n', 'L', ':bn<CR>')
-vim.keymap.set('n', '<leader>oi', "<cmd>lua require('oil').toggle_float('.')<CR>", { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>oi', "<cmd>lua require('oil').toggle_float()<CR>", { noremap = true, silent = true })
 
 -- restore the session for the current directory
 vim.api.nvim_set_keymap('n', '<leader>qs', [[<cmd>lua require("persistence").load()<cr>]], {})
@@ -537,7 +541,15 @@ require('lazy').setup({
       -- Automatically install LSPs and related tools to stdpath for Neovim
       -- Mason must be loaded before its dependents so we need to set it up here.
       -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
-      { 'williamboman/mason.nvim', opts = {} },
+      {
+        'williamboman/mason.nvim',
+        opts = {
+          registries = {
+            'github:mason-org/mason-registry',
+            'github:Crashdummyy/mason-registry',
+          },
+        },
+      },
       'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
@@ -813,6 +825,33 @@ require('lazy').setup({
     },
     opts = {
       notify_on_error = false,
+      formatters = {
+        csharpier = function()
+          local useDotnet = not vim.fn.executable 'csharpier'
+
+          local command = useDotnet and 'dotnet csharpier' or 'csharpier'
+
+          local version_out = vim.fn.system(command .. ' --version')
+
+          -- vim.notify(version_out)
+
+          --NOTE: system command returns the command as the first line of the result, need to get the version number on the final line
+          local version_result = version_out[#version_out]
+          local major_version = tonumber((version_out or ''):match '^(%d+)') or 0
+          local is_new = major_version >= 1
+
+          -- vim.notify(tostring(is_new))
+
+          local args = is_new and { 'format', '$FILENAME' } or { '--write-stdout' }
+
+          return {
+            command = command,
+            args = args,
+            stdin = not is_new,
+            require_cwd = false,
+          }
+        end,
+      },
       format_after_save = function(bufnr)
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
@@ -839,6 +878,7 @@ require('lazy').setup({
         -- Conform can also run multiple formatters sequentially
         python = { 'black' },
         cs = { 'csharpier' },
+        json = { 'jq' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
@@ -873,7 +913,9 @@ require('lazy').setup({
       -- C-k: Toggle signature help (if signature.enabled = true)
       --
       -- See :h blink-cmp-config-keymap for defining your own keymap
-      keymap = { preset = 'default' },
+      keymap = {
+        preset = 'default',
+      },
 
       appearance = {
         -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
